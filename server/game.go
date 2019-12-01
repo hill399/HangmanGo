@@ -45,6 +45,7 @@ func newGame() int {
 	return openGames[len(openGames)-1].gameID
 }
 
+/* Print function to display game data to client */
 func (g gameStore) PrintGame(w http.ResponseWriter) {
 	fmt.Fprintf(w, "   %d	   %s       %t       %d      %s\n",
 		g.gameID,
@@ -55,6 +56,7 @@ func (g gameStore) PrintGame(w http.ResponseWriter) {
 	)
 }
 
+/* Function to check if the queried game is active */
 func (g gameStore) IsGameActive(w http.ResponseWriter) bool {
 	if g.gameState == false || g.turns == 0 {
 		io.WriteString(w, "Game is finished, cannot make guess\n")
@@ -78,6 +80,7 @@ func (g gameStore) IsLetterValid(w http.ResponseWriter, guess string) (bool, []s
 	return true, g.lettersGuessed
 }
 
+/* Function to evaluate the clients guess against the current game state */
 func (g gameStore) EvaluateGuess(w http.ResponseWriter, guess string) int {
 	var ls int
 
@@ -101,6 +104,7 @@ func (g gameStore) EvaluateGuess(w http.ResponseWriter, guess string) int {
 	return g.turns
 }
 
+/* Function to determine if a game has been won */
 func (g gameStore) EvaluateWinState(name string) (string, bool) {
 
 	/* Evaluate state of guess word to determine win condition */
