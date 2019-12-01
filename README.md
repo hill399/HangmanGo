@@ -34,12 +34,17 @@ Interacts with the server via POST/GET requests. Control is handled by CLI inter
 
 ## Usage 
 
-Build and run both packages
+Build and run server with:
+```
+go build main.go game.go
+```
+
+Build client with:
 ```
 go build main.go
 ```
 
-Execute `/main` to see usage options.
+Execute `/main` on client executable to see usage options.
 
 
 
