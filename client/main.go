@@ -29,10 +29,11 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Hangman CLI"
 	app.Usage = "Client side CLI for hangman application"
+	app.Version = "1.0.0"
 
 	/* Creation of CLI functions and documentation */
 	/* "Action" is effective function call */
-	app.Commands = []*cli.Command{
+	app.Commands = []cli.Command{
 		{
 			/* Create new game - calls "/newgame" handler on server-side */
 			Name:    "newgame",

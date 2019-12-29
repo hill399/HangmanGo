@@ -53,39 +53,44 @@ func main() {
 		/* mutex lock game to alter for concurrency purposes */
 		openGames[gameNo].mux.Lock()
 
-		openGames[gameNo].gameState = openGames[gameNo].IsGameActive(w)
+		pGame := &openGames[gameNo]
 
-		var validGame, validLetter bool
+		/* Check if game is active */
+		pGame.IsGameActive(w)
 
-		validGame = openGames[gameNo].gameState
+		var validLetter bool
 
-		if validGame == true {
-			validLetter, openGames[gameNo].lettersGuessed = openGames[gameNo].IsLetterValid(w, guess)
+		/* If game active, validate letter */
+		if pGame.gameState == true {
+			validLetter = pGame.IsLetterValid(w, guess)
 		}
 
-		if validGame == true && validLetter == true {
+		if pGame.gameState == true && validLetter == true {
 			/* Loop through win word and evaluate against char guess */
-			openGames[gameNo].turns = openGames[gameNo].EvaluateGuess(w, guess)
+			pGame.EvaluateGuess(w, guess)
 
-			openGames[gameNo].winner, openGames[gameNo].gameState = openGames[gameNo].EvaluateWinState(username)
+			pGame.EvaluateWinState(username)
 
-			if openGames[gameNo].gameState != true {
-				fmt.Fprintf(w, "You are the winner of Game %d!\n", gameNo)
+			if pGame.turns == 0 {
+				pGame.gameState = false
 			}
 
-			if openGames[gameNo].turns == 0 {
-				fmt.Fprintf(w, "Game %d Over!\n", gameNo)
-				openGames[gameNo].gameState = false
+			if pGame.gameState != true {
+				if pGame.turns == 0 {
+					fmt.Fprintf(w, "You lose, Game %d over!\n", gameNo)
+				} else {
+					fmt.Fprintf(w, "You are the winner of Game %d!\n", gameNo)
+				}
 			}
 		}
 
 		/* Write game state to client after turn in complete */
 		io.WriteString(w, "GAME ID | WINNER | PLAYABLE | TURNS | WORD STATE \n")
-		openGames[gameNo].PrintGame(w)
+		pGame.PrintGame(w)
 
 		/* Print to server console */
 		fmt.Printf("Guess made on game %d\n", gameNo)
-		fmt.Println(openGames[gameNo])
+		fmt.Println(pGame)
 
 		/* Unlock mutex to allow for next user to attempt */
 		openGames[gameNo].mux.Unlock()
