@@ -45,48 +45,45 @@ func newGame() int {
 	return openGames[len(openGames)-1].gameID
 }
 
-/* Print function to display game data to client */
-func (g gameStore) PrintGame(w http.ResponseWriter) {
+func (pGame *gameStore) PrintGame(w http.ResponseWriter) {
 	fmt.Fprintf(w, "   %d	   %s       %t       %d      %s\n",
-		g.gameID,
-		g.winner,
-		g.gameState,
-		g.turns,
-		strings.Join(g.completeWord, ","),
+		(*pGame).gameID,
+		(*pGame).winner,
+		(*pGame).gameState,
+		(*pGame).turns,
+		strings.Join((*pGame).completeWord, ","),
 	)
 }
 
-/* Function to check if the queried game is active */
-func (g gameStore) IsGameActive(w http.ResponseWriter) bool {
-	if g.gameState == false || g.turns == 0 {
+func (pGame *gameStore) IsGameActive(w http.ResponseWriter) /*bool*/ {
+	if (*pGame).gameState == false || (*pGame).turns == 0 {
 		io.WriteString(w, "Game is finished, cannot make guess\n")
-		return false
+		//		return false
 	}
 
-	return true
+	//	return true
 }
 
 /* Evaluates user guess against array of characters already used in active game */
-func (g gameStore) IsLetterValid(w http.ResponseWriter, guess string) (bool, []string) {
-	for _, letter := range g.lettersGuessed {
+func (pGame *gameStore) IsLetterValid(w http.ResponseWriter, guess string) bool {
+	for _, letter := range (*pGame).lettersGuessed {
 		if letter == guess {
 			/* Add guessed letter to burnt letters array */
 			io.WriteString(w, "Letter already played, try again\n")
-			return false, g.lettersGuessed
+			return false
 		}
 	}
 
-	g.lettersGuessed = append(g.lettersGuessed, guess)
-	return true, g.lettersGuessed
+	(*pGame).lettersGuessed = append((*pGame).lettersGuessed, guess)
+	return true
 }
 
-/* Function to evaluate the clients guess against the current game state */
-func (g gameStore) EvaluateGuess(w http.ResponseWriter, guess string) int {
+func (pGame *gameStore) EvaluateGuess(w http.ResponseWriter, guess string) /*int*/ {
 	var ls int
 
-	for i := range g.playWord {
-		if g.playWord[i] == guess {
-			g.completeWord[i] = g.playWord[i]
+	for i := range (*pGame).playWord {
+		if (*pGame).playWord[i] == guess {
+			(*pGame).completeWord[i] = (*pGame).playWord[i]
 			ls++
 		}
 	}
@@ -95,32 +92,31 @@ func (g gameStore) EvaluateGuess(w http.ResponseWriter, guess string) int {
 
 	/* If char not found, reduce number of turns */
 	if ls == 0 {
-		g.turns = g.turns - 1
-		if g.turns == 0 {
-			g.gameState = false
+		(*pGame).turns = (*pGame).turns - 1
+		if (*pGame).turns == 0 {
+			(*pGame).gameState = false
 		}
 	}
 
-	return g.turns
+	//	return (*pGame).turns
 }
 
-/* Function to determine if a game has been won */
-func (g gameStore) EvaluateWinState(name string) (string, bool) {
+func (pGame *gameStore) EvaluateWinState(name string) /*(string, bool)*/ {
 
 	/* Evaluate state of guess word to determine win condition */
 	win := true
-	for i, letter := range g.completeWord {
-		if g.playWord[i] != letter {
+	for i, letter := range (*pGame).completeWord {
+		if (*pGame).playWord[i] != letter {
 			win = false
 		}
 	}
 
 	/* Modify game state and set winner if game over */
 	if win == true {
-		g.winner = name
-		g.gameState = false
-		return g.winner, g.gameState
+		(*pGame).winner = name
+		(*pGame).gameState = false
+		//		return (*pGame).winner, (*pGame).gameState
 	}
 
-	return "N/A", true
+	//	return "N/A", true
 }
