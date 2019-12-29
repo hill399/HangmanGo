@@ -55,13 +55,10 @@ func (pGame *gameStore) PrintGame(w http.ResponseWriter) {
 	)
 }
 
-func (pGame *gameStore) IsGameActive(w http.ResponseWriter) /*bool*/ {
+func (pGame *gameStore) IsGameActive(w http.ResponseWriter) {
 	if (*pGame).gameState == false || (*pGame).turns == 0 {
 		io.WriteString(w, "Game is finished, cannot make guess\n")
-		//		return false
 	}
-
-	//	return true
 }
 
 /* Evaluates user guess against array of characters already used in active game */
@@ -78,7 +75,7 @@ func (pGame *gameStore) IsLetterValid(w http.ResponseWriter, guess string) bool 
 	return true
 }
 
-func (pGame *gameStore) EvaluateGuess(w http.ResponseWriter, guess string) /*int*/ {
+func (pGame *gameStore) EvaluateGuess(w http.ResponseWriter, guess string) {
 	var ls int
 
 	for i := range (*pGame).playWord {
@@ -97,11 +94,9 @@ func (pGame *gameStore) EvaluateGuess(w http.ResponseWriter, guess string) /*int
 			(*pGame).gameState = false
 		}
 	}
-
-	//	return (*pGame).turns
 }
 
-func (pGame *gameStore) EvaluateWinState(name string) /*(string, bool)*/ {
+func (pGame *gameStore) EvaluateWinState(name string) {
 
 	/* Evaluate state of guess word to determine win condition */
 	win := true
@@ -115,8 +110,5 @@ func (pGame *gameStore) EvaluateWinState(name string) /*(string, bool)*/ {
 	if win == true {
 		(*pGame).winner = name
 		(*pGame).gameState = false
-		//		return (*pGame).winner, (*pGame).gameState
 	}
-
-	//	return "N/A", true
 }
