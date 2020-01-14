@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"net/http"
 	"strings"
 	"sync"
 
@@ -45,8 +43,9 @@ func newGame() int {
 	return openGames[len(openGames)-1].gameID
 }
 
-func (pGame *gameStore) PrintGame(w http.ResponseWriter) {
-	fmt.Fprintf(w, "   %d	   %s       %t       %d      %s\n",
+func (pGame *gameStore) PrintGame() string {
+
+	return fmt.Sprintf("   %d	   %s       %t       %d      %s\n",
 		(*pGame).gameID,
 		(*pGame).winner,
 		(*pGame).gameState,
@@ -55,18 +54,18 @@ func (pGame *gameStore) PrintGame(w http.ResponseWriter) {
 	)
 }
 
-func (pGame *gameStore) IsGameActive(w http.ResponseWriter) {
+func (pGame *gameStore) IsGameActive(d *[]string) {
 	if (*pGame).gameState == false || (*pGame).turns == 0 {
-		io.WriteString(w, "Game is finished, cannot make guess\n")
+		*d = append(*d, fmt.Sprintf("Game is finished, cannot make guess\n"))
 	}
 }
 
 /* Evaluates user guess against array of characters already used in active game */
-func (pGame *gameStore) IsLetterValid(w http.ResponseWriter, guess string) bool {
+func (pGame *gameStore) IsLetterValid(guess string, d *[]string) bool {
 	for _, letter := range (*pGame).lettersGuessed {
 		if letter == guess {
 			/* Add guessed letter to burnt letters array */
-			io.WriteString(w, "Letter already played, try again\n")
+			*d = append(*d, fmt.Sprintf("Letter already played, try again\n"))
 			return false
 		}
 	}
@@ -75,7 +74,7 @@ func (pGame *gameStore) IsLetterValid(w http.ResponseWriter, guess string) bool 
 	return true
 }
 
-func (pGame *gameStore) EvaluateGuess(w http.ResponseWriter, guess string) {
+func (pGame *gameStore) EvaluateGuess(guess string, d *[]string) {
 	var ls int
 
 	for i := range (*pGame).playWord {
@@ -85,7 +84,7 @@ func (pGame *gameStore) EvaluateGuess(w http.ResponseWriter, guess string) {
 		}
 	}
 
-	fmt.Fprintf(w, "%d Correct letters found!\n", ls)
+	*d = append(*d, fmt.Sprintf("%d Correct letters found!\n", ls))
 
 	/* If char not found, reduce number of turns */
 	if ls == 0 {

@@ -1,7 +1,7 @@
 # HangmanGo
 Simple hangman game written in Go.
 
-HTTP-networked game with the following features:
+gRPC-connected game with the following features:
 - Able to run multiple game instances
 - Players permitted to play any running game instance
 - Tracks turns taken, game state and winner (if any)
@@ -10,20 +10,20 @@ HTTP-networked game with the following features:
 Consists of the following components:
 
 ## Server
-Utilises `net/http` to start a server running by default at `localhost:8080`. 
+Utilises `grpc` to start a server running by default at `localhost:50051`. 
 
-Links game functions into server so that POST/GET requests can be used to change/view the game state. 
+Links game functions into server so that requests to the below RPC endpoints can be used to change/view the game state. 
 
-`newGameHandler`: Generates new game template and pushes it into active games array.
+`NewGame`: Generates new game template and pushes it into active games array.
 
-`openGamesHandler`: Retrieves list of currently open games.
+`List`: Retrieves list of currently open games.
 
-`guessHandler`: Evaluates validity of user guess and processes guess. Determines win/lose state.
+`Guess`: Evaluates validity of user guess and processes guess. Determines win/lose state.
 
 
 ## Client
 
-Interacts with the server via POST/GET requests. Control is handled by CLI interface `urfave/cli`.
+Interacts with the server via RPC requests. Control is handled by CLI interface `urfave/cli`.
 
 `newgame`: Generates new game at server and responds with game no. created.
 
@@ -36,15 +36,15 @@ Interacts with the server via POST/GET requests. Control is handled by CLI inter
 
 Build and run server with:
 ```
-go build main.go game.go
+go build server.go game.go
 ```
 
 Build client with:
 ```
-go build main.go
+go build client.go
 ```
 
-Execute `/main` on client executable to see usage options.
+Execute `/client` on client executable to see usage options.
 
 
 

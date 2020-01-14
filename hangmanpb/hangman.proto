@@ -1,0 +1,43 @@
+syntax="proto3";
+
+package hangman;
+option go_package = "hangmanpb";
+
+message Guess {
+    int32 game_number = 1;
+    string guess_letter = 2;
+    string username = 3;
+}
+
+message GuessRequest {
+    Guess guess = 1;
+}
+
+message GuessResponse {
+    string response = 1;
+    repeated string detail = 2;
+}
+
+service GuessService {
+    rpc Guess(GuessRequest) returns (GuessResponse) {};
+}
+
+message NewGameRequest {}
+
+message NewGameResponse {
+    int32 game_number = 1;
+}
+
+service NewGameService {
+    rpc NewGame(NewGameRequest) returns (NewGameResponse) {};
+}
+
+message ListRequest {}
+
+message ListResponse {
+    repeated string game_details = 1;
+}
+
+service ListService {
+    rpc List(ListRequest) returns (ListResponse) {};
+}
